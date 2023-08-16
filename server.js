@@ -10,3 +10,28 @@ mongoose.connect('mongodb://localhost:27017/bookdb', { useNewUrlParser: true, us
     author: String
   });
 
+  const Book = mongoose.model('Book', bookSchema);
+  app.get('/books', (req, res) => {
+    Book.find()
+      .then(books => res.json(books))
+      .catch(err => res.status(500).send(err));
+  });
+  
+  app.post('/books', (req, res) => {
+    const newBook = new Book(req.body);
+    newBook.save()
+      .then(() => res.status(201).send(newBook))
+      .catch(err => res.status(500).send(err));
+  });
+  
+  app.put('/books/:id', (req, res) => {
+    Book.findByIdAndUpdate(req.params.id, req.body)
+      .then(() => res.send())
+      .catch(err => res.status(404).send(err));
+  });
+  
+  app.delete('/books/:id', (req, res) => {
+    Book.findByIdAndRemove(req.params.id)
+      .then(() => res.send())
+      .catch(err => res.status(404).send(err));
+  });
